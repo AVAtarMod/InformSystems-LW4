@@ -13,7 +13,7 @@ namespace _4LW
         {
             if (index >= 0)
                 this.index = index;
-            else throw new ArgumentException("Index must be positive. We get " + index.ToString() + ". ");
+            else throw new IndexOutOfRangeException("Index must be positive. We get " + index.ToString() + ". ");
         }
         public static implicit operator int(ArrayIndex i) => i.index;
         public static implicit operator ArrayIndex(int i) => new ArrayIndex(i);
