@@ -17,6 +17,9 @@
       "indexer": {
         "type": "Project"
       }
-    }
+    },
+    ".NETFramework,Version=v4.7.2/win": {},
+    ".NETFramework,Version=v4.7.2/win-x64": {},
+    ".NETFramework,Version=v4.7.2/win-x86": {}
   }
 }
