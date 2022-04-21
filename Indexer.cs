@@ -8,7 +8,7 @@ namespace _4LW
 {
     public class Indexer
     {
-        public Indexer(double[] array, Index from, Index to)
+        public Indexer(double[] array, ArrayIndex from, ArrayIndex to)
         {
             if (from >= to)
                 throw new ArgumentException("From must be lesser then to. From=" + from.ToString() + ", to=" + to.ToString());
@@ -17,25 +17,25 @@ namespace _4LW
 
             this.from = from;
             this.to = to;
-            this.array = (double[])array.Clone();
+            this.array = array;
             return;
         }
         public int Length => to - from + 1;
-        public double this[Index i]
+        public double this[ArrayIndex i]
         {
             get
             {
-                Index real = from + i;
-                return array[real];
+                ArrayIndex real = from + i;
+                return (int)array.GetValue(real);
             }
             set
             {
-                Index real = from + i;
-                array[real] = value;
+                ArrayIndex real = from + i;
+                array.SetValue(value, real);
             }
         }
 
-        private double[] array;
-        private Index from, to;
+        private Array array;
+        private ArrayIndex from, to;
     }
 }

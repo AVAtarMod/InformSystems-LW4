@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace _4LW
 {
-    public class Index
+    public class ArrayIndex
     {
         private int index;
-        public Index(int index)
+        public ArrayIndex(int index)
         {
             if (index >= 0)
                 this.index = index;
             else throw new ArgumentException("Index must be positive. We get " + index.ToString() + ". ");
         }
-        public static implicit operator int(Index i) => i.index;
-        public static implicit operator Index(int i) => new Index(i);
+        public static implicit operator int(ArrayIndex i) => i.index;
+        public static implicit operator ArrayIndex(int i) => new ArrayIndex(i);
     }
 }
