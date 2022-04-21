@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LinearEquation
+namespace SystemLinearEquations
 {
     public class LinearEquation
     {
