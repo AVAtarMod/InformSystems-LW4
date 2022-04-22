@@ -18,5 +18,18 @@ namespace SystemLinearEquations
     }
     public class SystemLinearEquations
     {
+        private List<LinearEquation> data;
+        private int length;
+        public SystemLinearEquations(int variableAmount)
+        {
+            if (variableAmount > 0)
+            {
+                data = new List<LinearEquation>();
+                length = variableAmount;
+            }
+            else throw new ArgumentException("Must be positive", "variableAmount");
+        }
+        public int Size => data.Count;
+        public int Length => length;
     }
 }
