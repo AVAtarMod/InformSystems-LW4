@@ -24,7 +24,22 @@ namespace SystemLinearEquations
             data = equation.data;
             b = equation.b;
         }
-        
+        public void Resize(int newSize)
+        {
+            int sizeDiff = newSize - Length;
+            if (newSize < 0)
+                throw new ArgumentException("Size Linear equation must be positive", "newSize");
+            else if (newSize == 0)
+                Clear();
+            else if (sizeDiff > 0)
+            {
+            }
+        }
+        public void Clear()
+        {
+            data.Clear();
+            b = 0;
+        }
         /// <summary>Return full length of LE (including constant term or 'b')</summary>
         public int Length => data.Count + 1;
     }
