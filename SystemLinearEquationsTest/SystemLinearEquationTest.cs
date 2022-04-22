@@ -56,7 +56,8 @@ namespace SystemLinearEquationTest
             system.Add(Le1);
             system.Add(Le2);
 
-            Assert.ThrowsException<ArgumentOutOfRangeException>(system[-1]);
+            Assert.ThrowsException
+                <ArgumentOutOfRangeException>(system[-1]);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
@@ -71,7 +72,8 @@ namespace SystemLinearEquationTest
             system.Add(Le1);
             system.Add(Le2);
 
-            Assert.ThrowsException<ArgumentOutOfRangeException>(system[system.Size + 1]);
+            Assert.ThrowsException
+                <ArgumentOutOfRangeException>(system[system.Size + 1]);
         }
         [TestMethod]
         public void GetEchelonForm()
@@ -124,7 +126,8 @@ namespace SystemLinearEquationTest
             system.Add(Le);
             system.Add(Le);
 
-            Assert.ThrowsException<UnsolvableSleException>(system.GetSolution());
+            Assert.ThrowsException
+                <UnsolvableSleException>(system.GetSolution());
         }
         [TestMethod]
         public void ConversionToString()
@@ -147,7 +150,6 @@ namespace SystemLinearEquationTest
         static internal double[] array6 = { 1.5, 1.0, 4, 2, 1, 0 };
         static internal double[] array4 = { 1.5, 1.0, 4, 2 };
         static internal double[] zeroArray = { 0, 0, 0, 0, 1 };
-
         static internal string array6Str = "1.5, 1.0, 4, 2, 1, 0";
         static internal string array4Str = "1.5, 1.0, 4, 2";
 
