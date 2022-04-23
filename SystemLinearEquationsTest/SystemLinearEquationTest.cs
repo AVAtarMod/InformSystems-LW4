@@ -33,7 +33,8 @@ namespace SystemLinearEquationTest
         {
             int length = 5;
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
-            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4).Resize(length);
+            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
+            Le2.Resize(length);
             SystemLinearEquations.SystemLinearEquations system =
                 new SystemLinearEquations.SystemLinearEquations(length);
             system.Add(Le1);
@@ -49,7 +50,8 @@ namespace SystemLinearEquationTest
         {
             int length = 5;
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
-            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4).Resize(length);
+            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
+            Le2.Resize(length);
             SystemLinearEquations.SystemLinearEquations system =
                 new SystemLinearEquations.SystemLinearEquations(length);
 
@@ -57,7 +59,7 @@ namespace SystemLinearEquationTest
             system.Add(Le2);
 
             Assert.ThrowsException
-                <ArgumentOutOfRangeException>(system[-1]);
+                <ArgumentOutOfRangeException>(() => system[-1]);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
@@ -65,7 +67,8 @@ namespace SystemLinearEquationTest
         {
             int length = 5;
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
-            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4).Resize(length);
+            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
+            Le2.Resize(length);
             SystemLinearEquations.SystemLinearEquations system =
                 new SystemLinearEquations.SystemLinearEquations(length);
 
@@ -73,24 +76,24 @@ namespace SystemLinearEquationTest
             system.Add(Le2);
 
             Assert.ThrowsException
-                <ArgumentOutOfRangeException>(system[system.Size + 1]);
+                <ArgumentOutOfRangeException>(() => system[system.Size + 1]);
         }
         [TestMethod]
         public void GetEchelonForm()
         {
             int length = 5;
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
-            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4).Resize(length);
+            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
+            Le2.Resize(length);
             SystemLinearEquations.SystemLinearEquations system =
                 new SystemLinearEquations.SystemLinearEquations(length);
-
             system.Add(Le1);
             system.Add(Le1);
             system.Add(Le2);
             system.Add(Le2);
             system.Add(Le2);
 
-            List<List<double>> matrix = system;
+            system = system.ToEchelonForm();
 
             Assert.IsTrue(isEchelon(system));
         }
@@ -127,14 +130,15 @@ namespace SystemLinearEquationTest
             system.Add(Le);
 
             Assert.ThrowsException
-                <UnsolvableSleException>(system.GetSolution());
+                <UnsolvableSleException>(() => system.GetSolution());
         }
         [TestMethod]
         public void ConversionToString()
         {
             int length = 5;
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
-            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4).Resize(length);
+            LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
+            Le2.Resize(length);
             SystemLinearEquations.SystemLinearEquations system =
                 new SystemLinearEquations.SystemLinearEquations(length);
 
@@ -160,7 +164,7 @@ namespace SystemLinearEquationTest
             int length = equation.Length;
             for (int i = 0; i < length; i++)
             {
-                int data = equation[i];
+                double data = equation[i];
                 if (!duplicates.Exists(x => x.Item1 == data))
                 {
                     duplicates.Add((data, 1));
@@ -184,9 +188,9 @@ namespace SystemLinearEquationTest
         public void ConstructFromString()
         {
             string Le = "1.5, 1.0, 4, 2";
-            LinearEquation equation = new LinearEquationе(Le);
+            LinearEquation equation = new LinearEquation(Le);
 
-            bool result = equation[0] == 1.5 && equation[1] = 1.0 && equation[2] == 4 && equation[3] = 2;
+            bool result = equation[0] == 1.5 && equation[1] == 1.0 && equation[2] == 4 && equation[3] == 2;
 
             Assert.IsTrue(result);
         }
@@ -194,17 +198,17 @@ namespace SystemLinearEquationTest
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ThrowConstructFromString_Empty()
         {
-            string Le = "";
+            string empty = "";
 
-            LinearEquation equation = new LinearEquationе(Le);
+            LinearEquation equation = new LinearEquation(empty);
 
             Assert.ThrowsException
-                <ArgumentOutOfRangeException>(equation[0]);
+                <ArgumentOutOfRangeException>(() => equation[0]);
         }
         [TestMethod]
         public void ConstructFromLe()
         {
-            LinearEquation e1 = new LinearEquation(1.5, 1.0, 4, 2, 3);
+            LinearEquation e1 = new LinearEquation(array6);
 
             LinearEquation e2 = new LinearEquation(e1);
 
@@ -216,12 +220,12 @@ namespace SystemLinearEquationTest
         {
             LinearEquation e1 = new LinearEquation();
 
-            Assert.ThrowsException<ArgumentException>(new LinearEquation(e1));
+            Assert.ThrowsException<ArgumentException>(() => new LinearEquation(e1));
         }
         [TestMethod]
         public void ConstructFromArray()
         {
-            double[] array = this.array6;
+            double[] array = array6;
 
             LinearEquation equation = new LinearEquation(array);
 
@@ -233,7 +237,7 @@ namespace SystemLinearEquationTest
         {
             double[] array = new double[5];
 
-            Assert.ThrowsException<ArgumentException>(new LinearEquation(array));
+            Assert.ThrowsException<ArgumentException>(() => new LinearEquation(array));
         }
         [TestMethod]
         public void InitRandomNumbers()
@@ -241,17 +245,17 @@ namespace SystemLinearEquationTest
             int length = 5;
             LinearEquation equation = new LinearEquation(length);
 
-            equation.Init(LinearEquation.Random);
+            equation.InitRandom(-10, 10);
 
             Assert.IsTrue(GetCountDuplicates(equation) <= 2);
         }
         [TestMethod]
         public void InitSameNumbers()
         {
-            int length = 5;
+            int length = 5, number = 1;
             LinearEquation equation = new LinearEquation(length);
 
-            equation.Init(LinearEquation.Same, 1);
+            equation.Init(number);
 
             Assert.IsTrue(GetCountDuplicates(equation) == length);
         }
@@ -373,7 +377,7 @@ namespace SystemLinearEquationTest
             double[] array = zeroArray;
             LinearEquation l = new LinearEquation(array);
 
-            bool result = array;
+            bool result = l ? true : false;
 
             Assert.IsFalse(result);
         }
@@ -383,7 +387,7 @@ namespace SystemLinearEquationTest
             double[] array = array6;
             LinearEquation l = new LinearEquation(array);
 
-            bool result = array;
+            bool result = l ? true : false; ;
 
             Assert.IsTrue(result);
         }
@@ -391,7 +395,7 @@ namespace SystemLinearEquationTest
         public void ConversionToString()
         {
             string Le = "1.5, 1, 4, 2";
-            LinearEquation equation = new LinearEquationе(array4);
+            LinearEquation equation = new LinearEquation(array4);
 
             string result = equation.ToString();
 
@@ -400,11 +404,11 @@ namespace SystemLinearEquationTest
         [TestMethod]
         public void ConversionToArray_Implicit()
         {
-            LinearEquation equation = new LinearEquationе(array4);
+            LinearEquation equation = new LinearEquation(array4);
 
-            double[] result = equation;
+            List<double> result = (List<double>)equation;
 
-            Assert.AreEqual(result, array4);
+            Assert.AreEqual(result.ToArray(), array4);
         }
     }
 }
