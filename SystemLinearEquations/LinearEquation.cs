@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SystemLinearEquations
+namespace SLE
 {
     public class LinearEquation
     {

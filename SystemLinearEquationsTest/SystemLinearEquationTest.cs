@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using SystemLinearEquations;
+using SLE;
 using System.Collections.Generic;
 
 namespace SystemLinearEquationTest
@@ -24,7 +24,7 @@ namespace SystemLinearEquationTest
         {
             int length = 5;
 
-            SystemLinearEquations.SystemLinearEquations system = new SystemLinearEquations.SystemLinearEquations(length);
+            SystemLinearEquations system = new SystemLinearEquations(length);
 
             Assert.AreEqual(5, system.Length);
         }
@@ -35,8 +35,8 @@ namespace SystemLinearEquationTest
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
             LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
             Le2.Resize(length);
-            SystemLinearEquations.SystemLinearEquations system =
-                new SystemLinearEquations.SystemLinearEquations(length);
+            SystemLinearEquations system =
+                new SystemLinearEquations(length);
             system.Add(Le1);
             system.Add(Le2);
 
@@ -52,8 +52,8 @@ namespace SystemLinearEquationTest
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
             LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
             Le2.Resize(length);
-            SystemLinearEquations.SystemLinearEquations system =
-                new SystemLinearEquations.SystemLinearEquations(length);
+            SystemLinearEquations system =
+                new SystemLinearEquations(length);
 
             system.Add(Le1);
             system.Add(Le2);
@@ -69,8 +69,8 @@ namespace SystemLinearEquationTest
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
             LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
             Le2.Resize(length);
-            SystemLinearEquations.SystemLinearEquations system =
-                new SystemLinearEquations.SystemLinearEquations(length);
+            SystemLinearEquations system =
+                new SystemLinearEquations(length);
 
             system.Add(Le1);
             system.Add(Le2);
@@ -85,8 +85,8 @@ namespace SystemLinearEquationTest
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
             LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
             Le2.Resize(length);
-            SystemLinearEquations.SystemLinearEquations system =
-                new SystemLinearEquations.SystemLinearEquations(length);
+            SystemLinearEquations system =
+                new SystemLinearEquations(length);
             system.Add(Le1);
             system.Add(Le1);
             system.Add(Le2);
@@ -109,7 +109,7 @@ namespace SystemLinearEquationTest
             new LinearEquation(new double[]{1.5, 1, 4, 2, 0 }),
             new LinearEquation(new double[]{1.5, 1, 4, 2, 0 })
             });
-            SystemLinearEquations.SystemLinearEquations system = new SystemLinearEquations.SystemLinearEquations(equations.Count - 1);
+            SystemLinearEquations system = new SystemLinearEquations(equations.Count - 1);
             foreach (LinearEquation Le in equations)
             {
                 system.Add(Le);
@@ -125,7 +125,7 @@ namespace SystemLinearEquationTest
         {
             double[] array = LinearEquationTest.zeroArray;
             LinearEquation Le = new LinearEquation(array);
-            SystemLinearEquations.SystemLinearEquations system = new SystemLinearEquations.SystemLinearEquations(array.Length - 1);
+            SystemLinearEquations system = new SystemLinearEquations(array.Length - 1);
             system.Add(Le);
             system.Add(Le);
 
@@ -139,8 +139,8 @@ namespace SystemLinearEquationTest
             LinearEquation Le1 = new LinearEquation(LinearEquationTest.array6);
             LinearEquation Le2 = new LinearEquation(LinearEquationTest.array4);
             Le2.Resize(length);
-            SystemLinearEquations.SystemLinearEquations system =
-                new SystemLinearEquations.SystemLinearEquations(length);
+            SystemLinearEquations system =
+                new SystemLinearEquations(length);
 
             system.Add(Le1);
             system.Add(Le2);
