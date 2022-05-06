@@ -2,6 +2,7 @@
 using System;
 using SLE;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SystemLinearEquationTest
 {
@@ -37,6 +38,7 @@ namespace SystemLinearEquationTest
             Le2.Resize(length);
             SystemLinearEquations system =
                 new SystemLinearEquations(length);
+            Console.WriteLine("LE length = " + Le2.Length + ", SLE length = " + length);
             system.Add(Le1);
             system.Add(Le2);
 
@@ -45,7 +47,6 @@ namespace SystemLinearEquationTest
             Assert.AreEqual(Le2, result);
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ThrowGetLeByIndex_Negative()
         {
             int length = 5;
@@ -62,7 +63,6 @@ namespace SystemLinearEquationTest
                 <ArgumentOutOfRangeException>(() => system[-1]);
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ThrowGetLeByIndex_GreaterThanMax()
         {
             int length = 5;
@@ -120,7 +120,6 @@ namespace SystemLinearEquationTest
             Assert.AreEqual(expectedResult, result);
         }
         [TestMethod]
-        [ExpectedException(typeof(UnsolvableSleException))]
         public void ThrowGetSolution()
         {
             double[] array = LinearEquationTest.zeroArray;
@@ -151,11 +150,11 @@ namespace SystemLinearEquationTest
     [TestClass]
     public class LinearEquationTest
     {
-        static internal double[] array6 = { 1.5, 1.0, 4, 2, 1, 0 };
-        static internal double[] array4 = { 1.5, 1.0, 4, 2 };
-        static internal double[] zeroArray = { 0, 0, 0, 0, 1 };
-        static internal string array6Str = "1.5, 1.0, 4, 2, 1, 0";
-        static internal string array4Str = "1.5, 1.0, 4, 2";
+        static internal readonly double[] array6 = { 1.5, 1.0, 4, 2, 1, 0 };
+        static internal readonly double[] array4 = { 1.5, 1.0, 4, 2 };
+        static internal readonly double[] zeroArray = { 0, 0, 0, 0, 1 };
+        static internal readonly string array6Str = "1.5, 1.0, 4, 2, 1, 0";
+        static internal readonly string array4Str = "1.5, 1.0, 4, 2";
 
         private int GetCountDuplicates(LinearEquation equation)
         {
@@ -195,15 +194,12 @@ namespace SystemLinearEquationTest
             Assert.IsTrue(result);
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ThrowConstructFromString_Empty()
         {
             string empty = "";
 
-            LinearEquation equation = new LinearEquation(empty);
-
             Assert.ThrowsException
-                <ArgumentOutOfRangeException>(() => equation[0]);
+                <ArgumentException>(() => new LinearEquation(empty));
         }
         [TestMethod]
         public void ConstructFromLe()
@@ -215,28 +211,24 @@ namespace SystemLinearEquationTest
             Assert.AreEqual(e1, e2);
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void ThrowConstructFromLe_Empty()
-        {
-            LinearEquation e1 = new LinearEquation();
-
-            Assert.ThrowsException<ArgumentException>(() => new LinearEquation(e1));
-        }
-        [TestMethod]
         public void ConstructFromArray()
         {
             double[] array = array6;
 
             LinearEquation equation = new LinearEquation(array);
-
-            Assert.AreEqual(array, equation.Data);
+            Assert.IsTrue(array.SequenceEqual(equation.Data));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void ThrowConstructFromArray_Empty()
         {
             double[] array = new double[5];
-
+#if DEBUG
+            foreach (var item in array)
+            {
+                Console.Write(item.ToString() + ' ');
+            }
+            Console.WriteLine();
+#endif
             Assert.ThrowsException<ArgumentException>(() => new LinearEquation(array));
         }
         [TestMethod]
@@ -254,10 +246,24 @@ namespace SystemLinearEquationTest
         {
             int length = 5, number = 1;
             LinearEquation equation = new LinearEquation(length);
-
+#if DEBUG
+            Console.WriteLine(equation.ToString());
+#endif
             equation.Init(number);
 
             Assert.IsTrue(GetCountDuplicates(equation) == length);
+        }
+        [TestMethod]
+        public void ResizeLE()
+        {
+            int oldLength = array4.Length, newLength = 6;
+            LinearEquation linear = new LinearEquation(array4);
+            Console.WriteLine("Init length: " + linear.Length);
+
+            linear.Resize(newLength);
+            Console.WriteLine("New length: " + linear.Length);
+
+            Assert.AreEqual(newLength, linear.Length);
         }
         [TestMethod]
         public void OperatorSumLe()
@@ -338,10 +344,8 @@ namespace SystemLinearEquationTest
         [TestMethod]
         public void OperatorEqual_True()
         {
-            double[] arrayL = array6;
-            double[] arrayR = array6;
-            LinearEquation l = new LinearEquation(arrayL);
-            LinearEquation r = new LinearEquation(arrayR);
+            LinearEquation l = new LinearEquation(array6);
+            LinearEquation r = new LinearEquation(array6);
 
             bool result = l == r;
 
@@ -409,6 +413,27 @@ namespace SystemLinearEquationTest
             List<double> result = (List<double>)equation;
 
             Assert.AreEqual(result.ToArray(), array4);
+        }
+    }
+    [TestClass]
+    public class VariousTests
+    {
+        [TestMethod]
+        public void ListResize()
+        {
+            List<int> source = new List<int>(), add = new List<int>();
+            add.AddRange(new int[] { 1, 2, 3 });
+            source.Add(3);
+
+            source.AddRange(add);
+
+            Assert.AreEqual(4, source.Count);
+        }
+        [TestMethod]
+        public void LEgetType()
+        {
+            LinearEquation equation = new LinearEquation(new double[] { 1, 3, 4 });
+            Assert.AreEqual(typeof(LinearEquation), equation.GetType());
         }
     }
 }
