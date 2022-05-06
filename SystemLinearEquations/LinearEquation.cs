@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SLE
 {
@@ -7,17 +8,25 @@ namespace SLE
     {
         private List<double> data;
         private double b;
+        private bool empty = true;
         private void ConstructFromArray(double[] array)
         {
             int length = array.Length;
-            if (length > 1)
+#if DEBUG
+            Console.WriteLine("C1: " + (length > 1));
+            Console.WriteLine("C2: " + (!array.All(x => x == 0)));
+#endif
+
+            if (length > 1 && !(array.All(x => x == 0)))
             {
                 //! Make deep copy of the array
                 data = new List<double>(array);
                 data.RemoveAt(length - 1);
                 b = array[length - 1];
+                empty = false;
             }
-            else throw new ArgumentException("Length array must be >= 2", "array");
+            else
+                throw new ArgumentException("Length array must be >= 2", "array");
         }
 
         // Constructors
@@ -33,22 +42,33 @@ namespace SLE
         {
             data = new List<double>(variableAmount - 1);
             b = 0;
+            empty = false;
         }
         public LinearEquation(string equation)
         {
-            double[] array = Array.ConvertAll<string, double>
-                (equation.Split(','),
-                x => double.Parse(x));
-            ConstructFromArray(array);
+            double[] array;
+            try
+            {
+                array = Array.ConvertAll<string, double>
+                        (equation.Split(','),
+                        x => double.Parse(x));
+                ConstructFromArray(array);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException();
+            }
         }
         public LinearEquation(double[] array)
         {
             ConstructFromArray(array);
+            empty = false;
         }
         public LinearEquation(LinearEquation equation)
         {
             data = equation.data;
             b = equation.b;
+            empty = equation.empty;
         }
 
         // User methods
@@ -119,16 +139,21 @@ namespace SLE
         }
         public void Resize(int newSize)
         {
-            int sizeDiff = newSize - Length;
             if (newSize < 0)
                 throw new ArgumentException("Size Linear equation must be positive", "newSize");
             else if (newSize == 0)
                 Clear();
-            else if (sizeDiff > 0)
+
+            int sizeDiff = newSize - Length;
+
+            if (sizeDiff > 0)
             {
-                List<double> end = new List<double>(sizeDiff);
-                data.InsertRange(Length, end);
+                double[] end = new double[sizeDiff];
+                data.AddRange(end);
+                data[Length - 2] = b;
+                b = 0;
             }
+
             else if (sizeDiff < 0)
             {
                 data.RemoveRange(Length + sizeDiff, Math.Abs(sizeDiff));
@@ -168,15 +193,31 @@ namespace SLE
         {
             get
             {
-                if (index < Length)
-                    return data[index];
-                else return b;
+                if (!empty)
+                {
+                    if (index < Length - 1)
+                        return data[index];
+                    else if (index == Length - 1)
+                        return b;
+                    else
+                        throw new ArgumentOutOfRangeException();
+                }
+                else
+                    throw new ArgumentOutOfRangeException();
             }
             set
             {
-                if (index < Length)
-                    data[index] = value;
-                else b = value;
+                if (!empty)
+                {
+                    if (index < Length - 1)
+                        data[index] = value;
+                    else if (index == Length - 1)
+                        b = value;
+                    else
+                        throw new ArgumentOutOfRangeException();
+                }
+                else
+                    throw new ArgumentOutOfRangeException();
             }
         }
         public static explicit operator List<double>(LinearEquation equation)
@@ -205,6 +246,35 @@ namespace SLE
         {
             return ForEach(right, ForEachActions.MultiplyDouble, -1D);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            return this == (LinearEquation)obj;
+        }
+
+
+        public static bool operator ==(LinearEquation left, LinearEquation right)
+        {
+            if (left.Length == right.Length)
+            {
+                for (int i = 0; i < left.Length; ++i)
+                {
+                    if (left[i] != right[i])
+                        return false;
+                }
+                return true;
+            }
+            return false;
+        }
+        public static bool operator !=(LinearEquation left, LinearEquation right)
+        {
+            return !(left == right);
+        }
         public static bool operator true(LinearEquation equation)
         {
             return !(TrueForRange(equation, 0, equation.Length - 1, TrueForRangeActions.isEqual, 0) && equation.b != 0);
@@ -213,15 +283,26 @@ namespace SLE
         {
             return TrueForRange(equation, 0, equation.Length - 1, TrueForRangeActions.isEqual, 0) && equation.b != 0;
         }
+        public override string ToString()
+        {
+            string result = "";
+            for (int i = 0; i < Length; i++)
+            {
+                result += this[i].ToString() + ' ';
+            }
+            result.Remove(result.Length - 1);
+            return result;
+        }
         // Accessors
-        /// <summary>Return full length of LE (including constant term or 'b')</summary>
+        /// <summary>Return full length of LE (including constant term i.e 'b')</summary>
         public int Length => data.Count + 1;
         public double[] Data
         {
             get
             {
-                List<double> result = data;
-                data.Insert(Length - 1, b);
+                // double[] tmp = data.ToArray();
+                List<double> result = new List<double>(data);
+                result.Insert(Length - 1, b);
                 return result.ToArray();
             }
         }
