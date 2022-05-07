@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Extensions;
 
 namespace SLE
 {
@@ -54,10 +52,10 @@ namespace SLE
             get { return data[index]; }
             set { data[index] = value; }
         }
-        public static implicit operator List<List<double>>(SystemLinearEquations system)
+        public static implicit operator EList<EList<double>>(SystemLinearEquations system)
         {
-            List<List<double>> result = new List<List<double>>();
-            foreach (List<double> item in system.data)
+            EList<EList<double>> result = new EList<EList<double>>();
+            foreach (EList<double> item in system.data)
             {
                 result.Add(item);
             }
