@@ -3,13 +3,14 @@ using System;
 using SLE;
 using System.Collections.Generic;
 using System.Linq;
+using Extensions;
 
 namespace SystemLinearEquationTest
 {
     [TestClass]
     public class SystemLinearEquationTest
     {
-        private bool isEchelon(List<List<double>> matrix)
+        private bool isEchelon(EList<EList<double>> matrix)
         {
             int length = matrix[0].Count;
             int size = matrix.Count / length;
@@ -102,7 +103,7 @@ namespace SystemLinearEquationTest
         {
             double[] expectedResult = new double[]
                 { 2 / 5, 1 / 4, -241 / 240, 19 / 12 };
-            List<LinearEquation> equations = new List<LinearEquation>(new LinearEquation[] {
+            EList<LinearEquation> equations = new EList<LinearEquation>(new LinearEquation[] {
             new LinearEquation(new double[]{1.5, 5, 4, 2, 1 }),
             new LinearEquation(new double[]{4, 1, 4, 2, 1 }),
             new LinearEquation(new double[]{1.5, 2, 4, 5, 5 }),
@@ -122,7 +123,7 @@ namespace SystemLinearEquationTest
         [TestMethod]
         public void ThrowGetSolution()
         {
-            double[] array = LinearEquationTest.zeroArray;
+            double[] array = LinearEquationTest.falseEquationArray;
             LinearEquation Le = new LinearEquation(array);
             SystemLinearEquations system = new SystemLinearEquations(array.Length - 1);
             system.Add(Le);
@@ -152,32 +153,53 @@ namespace SystemLinearEquationTest
     {
         static internal readonly double[] array6 = { 1.5, 1.0, 4, 2, 1, 0 };
         static internal readonly double[] array4 = { 1.5, 1.0, 4, 2 };
-        static internal readonly double[] zeroArray = { 0, 0, 0, 0, 1 };
+        static internal readonly double[] falseEquationArray = { 0, 0, 0, 0, 1 };
         static internal readonly string array6Str = "1.5, 1.0, 4, 2, 1, 0";
         static internal readonly string array4Str = "1.5, 1.0, 4, 2";
+        private static EList<double> ListMult(EList<double> source, double mult)
+        {
+            EList<double> expected = new EList<double>(array6);
+            for (int i = 0; i < expected.Count; ++i)
+            {
+                expected[i] *= mult;
+            }
 
+            return expected;
+        }
         private int GetCountDuplicates(LinearEquation equation)
         {
-            List<ValueTuple<double, int>> duplicates = new List<ValueTuple<double, int>>();
+            EList<(double, int)> duplicates = new EList<(double, int)>();
 
             int length = equation.Length;
             for (int i = 0; i < length; i++)
             {
                 double data = equation[i];
+#if DEBUG
+                Console.Write("data: " + data + ", ");
+#endif
                 if (!duplicates.Exists(x => x.Item1 == data))
                 {
+#if DEBUG
+                    Console.Write("add " + data + ", ");
+#endif
                     duplicates.Add((data, 1));
                 }
                 else
                 {
-                    var tmp = duplicates.Find(x => x.Item1 == data);
+                    int index = duplicates.FindIndex(x => x.Item1 == data);
+                    (double, int) tmp = duplicates[index];
                     ++tmp.Item2;
+                    duplicates[index] = tmp;
                 }
             }
 
             int result = 0;
             foreach (var item in duplicates)
             {
+#if DEBUG
+                Console.WriteLine();
+                Console.Write("(" + item.Item1 + "; " + item.Item2 + "), ");
+#endif
                 if (item.Item2 > 1) result += item.Item2;
             }
 
@@ -186,12 +208,14 @@ namespace SystemLinearEquationTest
         [TestMethod]
         public void ConstructFromString()
         {
-            string Le = "1.5, 1.0, 4, 2";
-            LinearEquation equation = new LinearEquation(Le);
+            string LEstring = array4Str;
 
-            bool result = equation[0] == 1.5 && equation[1] == 1.0 && equation[2] == 4 && equation[3] == 2;
-
-            Assert.IsTrue(result);
+            LinearEquation result = new LinearEquation(LEstring);
+#if DEBUG
+            Console.WriteLine("Result: " + result);
+            Console.WriteLine("Expected: " + array4.ToEList());
+#endif
+            Assert.IsTrue(array4.SequenceEqual(result));
         }
         [TestMethod]
         public void ThrowConstructFromString_Empty()
@@ -222,6 +246,7 @@ namespace SystemLinearEquationTest
         public void ThrowConstructFromArray_Empty()
         {
             double[] array = new double[5];
+
 #if DEBUG
             foreach (var item in array)
             {
@@ -229,6 +254,7 @@ namespace SystemLinearEquationTest
             }
             Console.WriteLine();
 #endif
+
             Assert.ThrowsException<ArgumentException>(() => new LinearEquation(array));
         }
         [TestMethod]
@@ -247,10 +273,12 @@ namespace SystemLinearEquationTest
             int length = 5, number = 1;
             LinearEquation equation = new LinearEquation(length);
 #if DEBUG
-            Console.WriteLine(equation.ToString());
+            Console.WriteLine("EMPTY: " + equation.ToString());
 #endif
             equation.Init(number);
-
+#if DEBUG
+            Console.WriteLine("INIT: " + equation.ToString());
+#endif
             Assert.IsTrue(GetCountDuplicates(equation) == length);
         }
         [TestMethod]
@@ -258,12 +286,15 @@ namespace SystemLinearEquationTest
         {
             int oldLength = array4.Length, newLength = 6;
             LinearEquation linear = new LinearEquation(array4);
-            Console.WriteLine("Init length: " + linear.Length);
-
+            LinearEquation expected = new LinearEquation(new double[] { 1.5, 1.0, 4, 2, 0, 0 });
+#if DEBUG
+            Console.WriteLine("INIT: " + linear);
+#endif
             linear.Resize(newLength);
-            Console.WriteLine("New length: " + linear.Length);
-
-            Assert.AreEqual(newLength, linear.Length);
+#if DEBUG
+            Console.WriteLine("RESIZED: " + linear);
+#endif
+            Assert.IsTrue(expected == linear);
         }
         [TestMethod]
         public void OperatorSumLe()
@@ -274,7 +305,11 @@ namespace SystemLinearEquationTest
             LinearEquation r = new LinearEquation(arrayR);
 
             LinearEquation result = l + r;
-
+#if DEBUG
+            Console.WriteLine("l: " + l);
+            Console.WriteLine("r: " + r);
+            Console.WriteLine("l + r: " + (l + r));
+#endif
             Assert.IsTrue(result[0] == 3 && result[1] == 2 && result[2] == 8 && result[3] == 4 && result[4] == 1 && result[5] == 0);
         }
         [TestMethod]
@@ -296,6 +331,11 @@ namespace SystemLinearEquationTest
             LinearEquation l = new LinearEquation(arrayL);
             LinearEquation r = new LinearEquation(arrayR);
 
+#if DEBUG
+            Console.WriteLine("l: " + l);
+            Console.WriteLine("r: " + r);
+            Console.WriteLine("l - r: " + (l - r));
+#endif
             LinearEquation result = l - r;
 
             Assert.IsTrue(result[0] == 0 && result[1] == 0 && result[2] == 0 && result[3] == 0 && result[4] == 1 && result[5] == 0);
@@ -316,10 +356,17 @@ namespace SystemLinearEquationTest
         {
             double mult = 3;
             LinearEquation equation = new LinearEquation(array6);
+            EList<double> expected = ListMult(new EList<double>(array6), mult);
 
             LinearEquation result = mult * equation;
 
-            Assert.IsTrue(result[0] == 4.5 && result[1] == 3.3 && result[2] == 12 && result[3] == 6 && result[4] == 3 && result[5] == 0);
+#if DEBUG
+            Console.WriteLine("l: " + mult);
+            Console.WriteLine("r: " + equation);
+            Console.WriteLine("l * r: " + (mult * equation));
+            Console.Write("expected: " + expected);
+#endif
+            Assert.IsTrue(expected.SequenceEqual(result));
         }
         [TestMethod]
         public void OperatorMultToDouble_Right()
@@ -327,19 +374,22 @@ namespace SystemLinearEquationTest
             double[] array = array6;
             double mult = 3;
             LinearEquation equation = new LinearEquation(array);
+            EList<double> expected = ListMult(array.ToEList(), mult);
 
             LinearEquation result = equation * mult;
 
-            Assert.IsTrue(result[0] == 4.5 && result[1] == 3.3 && result[2] == 12 && result[3] == 6 && result[4] == 3 && result[5] == 0);
+            Assert.IsTrue(expected.SequenceEqual(result));
         }
         [TestMethod]
         public void OperatorMinus()
         {
             double[] array = array6;
             LinearEquation equation = new LinearEquation(array);
+            EList<double> expected = ListMult(array.ToEList(), -1);
 
             LinearEquation result = -equation;
-            Assert.IsTrue(result[0] == -array[0] && result[1] == -array[1] && result[2] == --array[2] && result[3] == --array[3] && result[4] == --array[4] && result[5] == --array[5]);
+
+            Assert.IsTrue(result.SequenceEqual(result));
         }
         [TestMethod]
         public void OperatorEqual_True()
@@ -378,7 +428,7 @@ namespace SystemLinearEquationTest
         [TestMethod]
         public void OperatorFalse()
         {
-            double[] array = zeroArray;
+            double[] array = falseEquationArray;
             LinearEquation l = new LinearEquation(array);
 
             bool result = l ? true : false;
@@ -403,6 +453,10 @@ namespace SystemLinearEquationTest
 
             string result = equation.ToString();
 
+#if DEBUG
+            Console.WriteLine($"Result: |{result}|");
+            Console.WriteLine($"Expected: |{Le}|");
+#endif
             Assert.AreEqual(Le, result);
         }
         [TestMethod]
@@ -410,24 +464,9 @@ namespace SystemLinearEquationTest
         {
             LinearEquation equation = new LinearEquation(array4);
 
-            List<double> result = (List<double>)equation;
+            EList<double> result = (EList<double>)equation;
 
-            Assert.AreEqual(result.ToArray(), array4);
-        }
-    }
-    [TestClass]
-    public class VariousTests
-    {
-        [TestMethod]
-        public void ListResize()
-        {
-            List<int> source = new List<int>(), add = new List<int>();
-            add.AddRange(new int[] { 1, 2, 3 });
-            source.Add(3);
-
-            source.AddRange(add);
-
-            Assert.AreEqual(4, source.Count);
+            Assert.IsTrue(array4.SequenceEqual(equation));
         }
         [TestMethod]
         public void LEgetType()
