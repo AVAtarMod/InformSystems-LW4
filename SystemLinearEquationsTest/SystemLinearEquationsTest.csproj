@@ -16,4 +16,8 @@
       <Name>SystemLinearEquations</Name>
     </ProjectReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Extensions\Extensions.csproj" />
+  </ItemGroup>
 </Project>

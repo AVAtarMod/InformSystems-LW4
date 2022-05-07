@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemLinearEquations", "Sy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemLinearEquationsTest", "SystemLinearEquationsTest\SystemLinearEquationsTest.csproj", "{CEB88599-079F-408C-B569-2F346D0DB561}"
 EndProject
+Project("{12E04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonCsharpTest", "CommonCsharpTest\CommonCsharpTest.csproj", "{AEB88599-079F-408C-B569-2F346D0DB561}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{0BD0D2B7-30B2-451A-8868-180D467A6676}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,10 @@ Global
 		{CEB88599-079F-408C-B569-2F346D0DB561}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEB88599-079F-408C-B569-2F346D0DB561}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEB88599-079F-408C-B569-2F346D0DB561}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BD0D2B7-30B2-451A-8868-180D467A6676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BD0D2B7-30B2-451A-8868-180D467A6676}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BD0D2B7-30B2-451A-8868-180D467A6676}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BD0D2B7-30B2-451A-8868-180D467A6676}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
